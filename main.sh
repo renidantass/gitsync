@@ -86,10 +86,9 @@ function cloning() {
         n_repos=$(cat repos | jq '. | length')
         ((n_repos = n_repos - 1))
         for i in  `seq 0 1 $n_repos`; do
-            name=$(cat repos | jq ".[$i].name")
-            repo=$(cat repos | jq ".[$i].clone_url")
-            repo=$(echo $repo | xargs)
-            echo $name
+            name=$(cat repos | jq ".[$i].name") # get repo name
+            repo=$(cat repos | jq ".[$i].clone_url") # get repo clone url
+            repo=$(echo $repo | xargs) # remove spaces at start of string...
             echo "[NOW] Cloning $name..."
             git clone $repo
         done
