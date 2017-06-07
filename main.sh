@@ -102,7 +102,7 @@ function cloning() {
 
 function main() {
     : CALL ALL THE FUNCTIONS :
-    echo
+    echo ""
     echo "Git stats ---~> $(git_install)"
     echo "Jq stats  ---~> $(jq_install)"
     echo "Git infos ---~> $(git_configure)"
