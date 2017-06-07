@@ -5,6 +5,7 @@ function git_install() {
         echo 'Installed'
     else
         sudo apt install -y git
+        clear
         echo 'Installed'
     fi
 }
@@ -16,6 +17,7 @@ function jq_install() {
         echo "Installed"
     else
         sudo apt install -y jq
+        clear
         echo "Installed"
     fi
 }
@@ -25,6 +27,7 @@ function check_username() {
     user=$(echo $USERNAME)
     if [ -e "/home/$user/gitsync" ];then
         username=$(cat /home/$user/gitsync/user_data)
+        clear
         echo $username
     else
         echo "None"
@@ -99,11 +102,11 @@ function cloning() {
 
 function main() {
     : CALL ALL THE FUNCTIONS :
-    echo 
+    echo
     echo "Git stats ---~> $(git_install)"
     echo "Jq stats  ---~> $(jq_install)"
-    echo "Username  ---~> $(check_username)"
     echo "Git infos ---~> $(git_configure)"
+    echo "Username  ---~> $(check_username)"
     echo ""
     cloning
 }
