@@ -1,7 +1,7 @@
 # coding:utf-8
 from json import dump, dumps, load, loads
 from subprocess import check_output
-from os import path, remove
+from os import path, remove, system
 from sys import platform, argv
 from hashlib import md5
 import requests
@@ -12,6 +12,7 @@ class Repos(object):
         self.username = username
         self.url = "https://api.github.com/users/%s/repos" % (self.username)
         self.check_repos()
+        self.input_user()
 
     @staticmethod
     def generate_hash_file(filename):
@@ -61,7 +62,6 @@ class Repos(object):
                 remove('current.json')
                 print 'is updated'.center(80)
                 print ' comparing '.center(80, '#')
-                self.show_repos()
                 return 1
             else:
                 print 'not updated'.center(80)
@@ -71,13 +71,15 @@ class Repos(object):
                 self.save_repos()
                 self.check_repos()
                 return 0
+        else:
+            self.save_repos()
+            self.check_repos()
 
     def show_repos(self):
         """ Show a list of repositories """
         if path.exists('repos.json') and path.isfile('repos.json'):
             with open('repos.json') as f:
                 repos = load(f)
-                print ''
                 print ' repositories '.center(80, '-')
                 for idx, repo in enumerate(repos):
                     print '[%d] - %s'.center(65) % (idx, repo['name'])
@@ -92,6 +94,44 @@ class Repos(object):
 
     def clone_all(self):
         """ Clone all repositories """
-        pass
+        with open('repos.json') as f:
+            repos = load(f)
+            print " status ".center(80, '^')
+            for repo in repos:
+                print "Cloning: %s".center(80) % (repo['name'])
+                system("git clone %s" % repo['links']['url_clone'])
+            else:
+                print "All repositories were cloned".center(80)
+            print " status ".center(80, '^')
+    
+    @staticmethod
+    def clone_url(idx):
+        """ Clone only one repository """
+        with open('repos.json') as f:
+            repo = load(f)[idx]
+            print " status ".center(80, '^')
+            print "Cloning: %s".center(80) % (repo['name'])
+            system("git clone %s" % repo['links']['url_clone'])
+            print " status ".center(80, '^')
+
+    def input_user(self):
+        """ Get a input from user to manipulate the program """
+        print ' user input '.center(80, '~')
+        print '[1] - Clone all'.center(80)
+        print '[2] - Clone specific (type number)'.center(80)
+        print '[3] - Quit'.center(80)
+        inp = int(input("".center(40)))
+        print ' user input '.center(80, '~')
+        if inp == 1:
+            self.clone_all()
+        elif inp == 2:
+            self.show_repos()
+            print ' user input '.center(80, '~')
+            idx = int(input("Choose a repo: ".center(60)))
+            print ' user input '.center(80, '~')
+            Repos.clone_url(idx)
+        else:
+            print 'exiting...'.center(80)
+            exit(0)
 
 Repos(argv[1])
