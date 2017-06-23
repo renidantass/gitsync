@@ -103,6 +103,7 @@ class Repos(object):
             else:
                 print "All repositories were cloned".center(80)
             print " status ".center(80, '^')
+            self.input_user()
     
     @staticmethod
     def clone_url(idx):
@@ -113,6 +114,7 @@ class Repos(object):
             print "Cloning: %s".center(80) % (repo['name'])
             system("git clone %s" % repo['links']['url_clone'])
             print " status ".center(80, '^')
+            self.input_user()
 
     def input_user(self):
         """ Get a input from user to manipulate the program """
