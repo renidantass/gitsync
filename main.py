@@ -4,7 +4,7 @@ from subprocess import check_output
 from os import path, remove, system
 from sys import platform, argv
 from hashlib import md5
-import requests
+from requests import get
 
 class Repos(object):
     """ A class to get, save, update and clone all repositories from user """
@@ -31,17 +31,17 @@ class Repos(object):
         hashO, hashX = Repos.generate_hash_file(filename), Repos.generate_hash_file(filenameX)
         return 1 if hashO == hashX else 0
 
-    def get(self):
+    def __get(self):
         """ Get response from request github API """
         try:
-            req = requests.get(self.url)
+            req = get(self.url)
             return loads(req.text)
         except Exception as e:
             raise Exception(e)
 
     def save_repos(self, fn='repos.json'):
         """ Save the response (only important links) of self.get """
-        repos = self.get()
+        repos = self.__get()
         all_repos = []
         try:
             for idx, repo in enumerate(repos):
@@ -104,7 +104,7 @@ class Repos(object):
                 print "All repositories were cloned".center(80)
             print " status ".center(80, '^')
             self.input_user()
-    
+
     @staticmethod
     def clone_url(idx):
         """ Clone only one repository """
