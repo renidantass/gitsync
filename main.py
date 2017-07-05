@@ -1,15 +1,21 @@
 # coding:utf-8
+""" A simple way to clone all repos and very fast """
+__author__ = "Reni Alkimim Dantas"
+__copyright__ = "All rights reserved for Reni Alkimim Dantas"
+__maintainer__ = "Reni A. Dantas"
+__version__ = "0.1.2"
 from json import dump, dumps, load, loads
 from subprocess import check_output
-from os import path, remove, system
+from os import path, remove, system, getcwd, chdir
 from sys import platform, argv
 from hashlib import md5
 from requests import get
 
 class Repos(object):
     """ A class to get, save, update and clone all repositories from user """
-    def __init__(self, username):
+    def __init__(self, username, directory):
         self.username = username
+        self.directory = directory if len(directory) > 2 else getcwd()
         self.url = "https://api.github.com/users/%s/repos" % (self.username)
         self.check_repos()
         self.input_user()
@@ -97,6 +103,7 @@ class Repos(object):
         with open('repos.json') as f:
             repos = load(f)
             print " status ".center(80, '^')
+            chdir(self.directory)
             for repo in repos:
                 print "Cloning: %s".center(80) % (repo['name'])
                 system("git clone %s" % repo['links']['url_clone'])
@@ -105,12 +112,12 @@ class Repos(object):
             print " status ".center(80, '^')
             self.input_user()
 
-    @staticmethod
-    def clone_url(idx):
+    def clone_url(self, idx):
         """ Clone only one repository """
         with open('repos.json') as f:
             repo = load(f)[idx]
             print " status ".center(80, '^')
+            chdir(self.directory)
             print "Cloning: %s".center(80) % (repo['name'])
             system("git clone %s" % repo['links']['url_clone'])
             print " status ".center(80, '^')
@@ -131,9 +138,11 @@ class Repos(object):
             print ' user input '.center(80, '~')
             idx = int(input("Choose a repo: ".center(60)))
             print ' user input '.center(80, '~')
-            Repos.clone_url(idx)
+            self.clone_url(idx)
         else:
             print 'exiting...'.center(80)
             exit(0)
 
-Repos(argv[1])
+if __name__ == '__main__':
+    directory = argv[2] if len(argv) > 2 else ''
+    Repos(argv[1], directory)
